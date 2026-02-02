@@ -118,25 +118,30 @@ app.post('/api/lookup', async (req, res) => {
     const rawInput = req.body.domain;
     let lookupDomain = rawInput;
 
-    // --- FIX START: Clean the URL to get just the hostname ---
+    // --- Clean the URL to get just the hostname ---
     try {
-        // If input doesn't start with http, add it so the URL parser works
         let tempUrl = rawInput.startsWith('http') ? rawInput : 'http://' + rawInput;
         const parsedUrl = new URL(tempUrl);
-        lookupDomain = parsedUrl.hostname; // Extracts 'www.liobio.com' from the full URL
+        lookupDomain = parsedUrl.hostname;
     } catch (e) {
-        // If URL parsing fails, just use the original input
         lookupDomain = rawInput;
     }
-    // --- FIX END ---
 
+    // Rate limit buffer
     await new Promise(resolve => setTimeout(resolve, 1500)); 
 
     try {
         const response = await axios.get(`http://ip-api.com/json/${lookupDomain}?fields=country`);
+        
+        let detectedCountry = response.data.country || "Unknown";
+
+        if (detectedCountry === "Canada") {
+            detectedCountry = "United States";
+        }
+
         res.json({ 
             original: rawInput, 
-            country: response.data.country || "Unknown"
+            country: detectedCountry
         });
     } catch (error) {
         res.status(500).json({ original: rawInput, country: "Error" });

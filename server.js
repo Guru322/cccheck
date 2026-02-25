@@ -36,7 +36,7 @@ res.send(`
         transition: transform 0.4s cubic-bezier(.2,.8,.2,1);
     }
 
-    /* Extracted your Glassmorphism styles to a reusable class */
+    /* Glassmorphism styles */
     .glass-card {
         padding: 30px;
         border-radius: 25px;
@@ -61,6 +61,35 @@ res.send(`
     td {
         padding: 8px 10px;
         border-bottom: 1px solid rgba(255,255,255,0.1);
+        word-break: break-all;
+    }
+
+    /* --- BEAUTIFUL SCROLLBAR CSS --- */
+    
+    /* Firefox */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+
+    /* Chrome, Edge, Safari */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
     }
 </style>
 </head>
@@ -124,7 +153,7 @@ transition:transform 0.2s;
         <div id="status" style="margin-top:10px;"></div>
     </div>
 
-    <div class="glass-card" style="max-height: 40vh; overflow-y: auto; padding-top: 15px;">
+    <div class="glass-card" style="max-height: 40vh; overflow-y: auto; padding-top: 15px; overflow-x: hidden;">
         <table id="resultTable"
         style="
         width:100%;
@@ -135,8 +164,8 @@ transition:transform 0.2s;
         ">
         <thead>
         <tr>
-        <th onclick="copyColumn(0)" title="Click to copy all Inputs">Input 📋</th>
-        <th onclick="copyColumn(1)" title="Click to copy all Countries">Country 📋</th>
+        <th onclick="copyColumn(0)" title="Click to copy all Inputs" style="width: 70%; text-align: left;">Input 📋</th>
+        <th onclick="copyColumn(1)" title="Click to copy all Countries" style="width: 30%; text-align: left;">Country 📋</th>
         </tr>
         </thead>
         <tbody id="tableBody"></tbody>

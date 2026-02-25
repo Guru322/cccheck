@@ -324,6 +324,6 @@ app.post('/api/lookup', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Running on http://localhost:${port}`);
-});
+app.listen(port, '0.0.0.0', () => {  
+    console.log(`Running on http://0.0.0.0:${port}`);  
+});  

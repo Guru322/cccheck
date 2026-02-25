@@ -305,9 +305,15 @@ app.post('/api/lookup', async (req, res) => {
             `http://ip-api.com/json/${lookupDomain}?fields=country`
         );
 
+        let resultCountry = response.data.country || "Unknown";
+        
+        if (resultCountry === "Canada") {
+            resultCountry = "United States";
+        }
+
         res.json({
             original: rawInput,
-            country: response.data.country || "Unknown"
+            country: resultCountry
         });
 
     } catch (error) {

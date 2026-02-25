@@ -14,14 +14,58 @@ res.send(`
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Liquid Bulk Lookup</title>
+<style>
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        overflow: hidden;
+        color: white;
+    }
+    
+    /* Central Wrapper to hold both cards and apply the 3D tilt */
+    #wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 800px;
+        max-width: 90%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        transition: transform 0.4s cubic-bezier(.2,.8,.2,1);
+    }
+
+    /* Extracted your Glassmorphism styles to a reusable class */
+    .glass-card {
+        padding: 30px;
+        border-radius: 25px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+        backdrop-filter: blur(30px) saturate(180%);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: inset 0 2px 2px rgba(255,255,255,0.5), 0 30px 60px rgba(0,0,0,0.5);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Table styling and copy-column hover effects */
+    th {
+        cursor: pointer;
+        transition: background 0.2s;
+        padding: 10px;
+    }
+    th:hover {
+        background: rgba(255,255,255,0.2);
+        border-radius: 8px;
+    }
+    td {
+        padding: 8px 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+</style>
 </head>
 
-<body style="
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-overflow:hidden;
-color:white;
-">
+<body>
 
 <div id="bg" style="
 position:fixed;
@@ -31,182 +75,185 @@ transform:scale(1.1);
 transition:transform 0.2s;
 "></div>
 
-<div id="card" style="
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:800px;
-max-width:90%;
-padding:30px;
-border-radius:25px;
-background:linear-gradient(
-135deg,
-rgba(255,255,255,0.25),
-rgba(255,255,255,0.05)
-);
-backdrop-filter:blur(30px) saturate(180%);
-border:1px solid rgba(255,255,255,0.4);
-box-shadow:
-inset 0 2px 2px rgba(255,255,255,0.5),
-0 30px 60px rgba(0,0,0,0.5);
-transition:
-transform 0.4s cubic-bezier(.2,.8,.2,1);
-">
 
-<div id="shine" style="
-position:absolute;
-inset:0;
-border-radius:25px;
-background:radial-gradient(
-circle at center,
-rgba(255,255,255,0.6),
-transparent 60%
-);
-opacity:0.3;
-pointer-events:none;
-"></div>
+<div id="wrapper">
+    <div id="shine" style="
+    position:absolute;
+    inset:0;
+    border-radius:25px;
+    background:radial-gradient(circle at center, rgba(255,255,255,0.6), transparent 60%);
+    opacity:0.3;
+    pointer-events:none;
+    z-index: 10;
+    "></div>
 
-<h1>Bulk Domain Lookup</h1>
+    <div class="glass-card">
+        <h1 style="margin-top:0;">Bulk Domain Lookup</h1>
+        <textarea id="domainInput"
+        style="
+        width:100%;
+        height:150px;
+        margin-bottom:15px;
+        background:rgba(255,255,255,0.1);
+        border:none;
+        border-radius:15px;
+        padding:10px;
+        color:white;
+        outline:none;
+        resize:vertical;
+        box-sizing: border-box;
+        "></textarea>
 
-<textarea id="domainInput"
-style="
-width:100%;
-height:150px;
-margin-bottom:15px;
-background:rgba(255,255,255,0.1);
-border:none;
-border-radius:15px;
-padding:10px;
-color:white;
-outline:none;
-"></textarea>
+        <button id="submitBtn"
+        onclick="processDomains()"
+        style="
+        padding:12px 25px;
+        border:none;
+        border-radius:15px;
+        background:rgba(255,255,255,0.2);
+        color:white;
+        cursor:pointer;
+        transition:0.2s;
+        "
+        onmouseover="this.style.transform='scale(1.05)'"
+        onmouseout="this.style.transform='scale(1)'"
+        >
+        Get Countries
+        </button>
 
-<button id="submitBtn"
-onclick="processDomains()"
-style="
-padding:12px 25px;
-border:none;
-border-radius:15px;
-background:rgba(255,255,255,0.2);
-color:white;
-cursor:pointer;
-transition:0.2s;
-"
-onmouseover="this.style.transform='scale(1.1)'"
-onmouseout="this.style.transform='scale(1)'"
->
-Get Countries
-</button>
+        <div id="status" style="margin-top:10px;"></div>
+    </div>
 
-<div id="status" style="margin-top:10px;"></div>
-
-<table id="resultTable"
-style="
-width:100%;
-margin-top:20px;
-border-collapse:collapse;
-background:rgba(255,255,255,0.05);
-border-radius:15px;
-overflow:hidden;
-">
-<thead>
-<tr>
-<th>Input</th>
-<th>Country</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
+    <div class="glass-card" style="max-height: 40vh; overflow-y: auto; padding-top: 15px;">
+        <table id="resultTable"
+        style="
+        width:100%;
+        border-collapse:collapse;
+        background:rgba(255,255,255,0.05);
+        border-radius:15px;
+        overflow:hidden;
+        ">
+        <thead>
+        <tr>
+        <th onclick="copyColumn(0)" title="Click to copy all Inputs">Input 📋</th>
+        <th onclick="copyColumn(1)" title="Click to copy all Countries">Country 📋</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        </table>
+    </div>
 </div>
 
+
 <script>
-const card = document.getElementById("card")
+const wrapper = document.getElementById("wrapper")
 const shine = document.getElementById("shine")
 const bg = document.getElementById("bg")
 
+// 3D Tilt Effect on the whole wrapper
 document.addEventListener("mousemove", e => {
-let x = e.clientX / window.innerWidth
-let y = e.clientY / window.innerHeight
+    let x = e.clientX / window.innerWidth
+    let y = e.clientY / window.innerHeight
+    let rotateX = (y - 0.5) * 15
+    let rotateY = (x - 0.5) * -15
 
-let rotateX = (y - 0.5) * 15
-let rotateY = (x - 0.5) * -15
+    wrapper.style.transform =
+    \`translate(-50%,-50%)
+    rotateX(\${rotateX}deg)
+    rotateY(\${rotateY}deg)
+    scale(1.03)\`
 
-card.style.transform =
-\`translate(-50%,-50%)
-rotateX(\${rotateX}deg)
-rotateY(\${rotateY}deg)
-scale(1.03)\`
+    shine.style.background =
+    \`radial-gradient(
+    circle at \${x*100}% \${y*100}%,
+    rgba(255,255,255,0.7),
+    transparent 60%)\`
 
-shine.style.background =
-\`radial-gradient(
-circle at \${x*100}% \${y*100}%,
-rgba(255,255,255,0.7),
-transparent 60%)\`
-
-bg.style.transform =
-\`scale(1.1)
-translate(\${x*-40}px,\${y*-40}px)\`
+    bg.style.transform =
+    \`scale(1.1)
+    translate(\${x*-40}px,\${y*-40}px)\`
 })
 
 document.addEventListener("mouseleave", () => {
-card.style.transform =
-"translate(-50%,-50%)"
+    wrapper.style.transform = "translate(-50%,-50%)"
 })
 
+// Logic to process domains
 async function processDomains() {
-const input = document.getElementById('domainInput').value;
-const statusDiv = document.getElementById('status');
-const tableBody = document.getElementById('tableBody');
-const btn = document.getElementById('submitBtn');
+    const input = document.getElementById('domainInput').value;
+    const statusDiv = document.getElementById('status');
+    const tableBody = document.getElementById('tableBody');
+    const btn = document.getElementById('submitBtn');
 
-const domains = input.split('\\n').map(d => d.trim()).filter(d => d);
+    const domains = input.split('\\n').map(d => d.trim()).filter(d => d);
 
-if (domains.length === 0)
-return alert("enter domains");
+    if (domains.length === 0) return alert("enter domains");
 
-btn.disabled = true;
-tableBody.innerHTML = '';
+    btn.disabled = true;
+    tableBody.innerHTML = '';
 
-for (let i = 0; i < domains.length; i++) {
-const domain = domains[i];
-statusDiv.innerText = \`Processing \${i+1} / \${domains.length}\`
+    for (let i = 0; i < domains.length; i++) {
+        const domain = domains[i];
+        statusDiv.innerText = \`Processing \${i+1} / \${domains.length}\`
 
-try{
-const response = await fetch('/api/lookup',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({domain})
-})
+        try{
+            const response = await fetch('/api/lookup',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({domain})
+            })
 
-const data = await response.json()
+            const data = await response.json()
 
-tableBody.innerHTML +=
-\`<tr>
-<td>\${data.original}</td>
-<td>\${data.country}</td>
-</tr>\`
+            tableBody.innerHTML +=
+            \`<tr>
+            <td>\${data.original}</td>
+            <td>\${data.country}</td>
+            </tr>\`
+        } catch {
+            tableBody.innerHTML +=
+            \`<tr>
+            <td>\${domain}</td>
+            <td>Error</td>
+            </tr>\`
+        }
+    }
+
+    statusDiv.innerText="Done"
+    btn.disabled=false
 }
-catch{
-tableBody.innerHTML +=
-\`<tr>
-<td>\${domain}</td>
-<td>Error</td>
-</tr>\`
-}
-}
 
-statusDiv.innerText="Done"
-btn.disabled=false
+// Logic to copy entire column
+function copyColumn(colIndex) {
+    const rows = document.querySelectorAll('#tableBody tr');
+    if (rows.length === 0) return; // Nothing to copy
+
+    let dataToCopy = [];
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells[colIndex]) {
+            dataToCopy.push(cells[colIndex].innerText);
+        }
+    });
+
+    const textToCopy = dataToCopy.join('\\n');
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        const colName = colIndex === 0 ? 'Inputs' : 'Countries';
+        alert(colName + ' copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy to clipboard.');
+    });
 }
 </script>
+
 </body>
 </html>
 `);
 });
 
 app.post('/api/lookup', async (req, res) => {
-    // Adding a quick fallback in case req.body.domain is empty/undefined
     const rawInput = req.body.domain || "";
     
     if (!rawInput) {
@@ -220,9 +267,7 @@ app.post('/api/lookup', async (req, res) => {
             ? rawInput
             : 'http://' + rawInput;
         lookupDomain = new URL(tempUrl).hostname;
-    } catch (error) {
-        // Ignored, fallback to rawInput
-    }
+    } catch (error) {}
 
     await new Promise(r => setTimeout(r, 500));
 

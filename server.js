@@ -1,329 +1,103 @@
 const express = require('express');
-const axios = require('axios');
 
 const app = express();
 const port = 3000;
 
-app.use(express.json());
-
 app.get('/', (req, res) => {
 res.send(`
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liquid Bulk Lookup</title>
+<html class="no-js" lang="en-US"> <head>
+<title>The Myth Of &#34;Consensual&#34; Internet</title>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-    body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        overflow: hidden;
-        color: white;
-    }
-    
-    /* Central Wrapper to hold both cards and apply the 3D tilt */
-    #wrapper {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 800px;
-        max-width: 90%;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        transition: transform 0.4s cubic-bezier(.2,.8,.2,1);
-    }
-
-    /* Glassmorphism styles */
-    .glass-card {
-        padding: 30px;
-        border-radius: 25px;
-        background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
-        backdrop-filter: blur(30px) saturate(180%);
-        border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: inset 0 2px 2px rgba(255,255,255,0.5), 0 30px 60px rgba(0,0,0,0.5);
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* Table styling and copy-column hover effects */
-    th {
-        cursor: pointer;
-        transition: background 0.2s;
-        padding: 10px;
-    }
-    th:hover {
-        background: rgba(255,255,255,0.2);
-        border-radius: 8px;
-    }
-    td {
-        padding: 8px 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        word-break: break-all;
-    }
-
-    /* --- BEAUTIFUL SCROLLBAR CSS --- */
-    
-    /* Firefox */
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
-    }
-
-    /* Chrome, Edge, Safari */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: transparent;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.5);
-    }
+.container{width:100%}.bg-white{--bg-opacity:1;background-color:#fff;background-color:rgba(255,255,255,var(--bg-opacity))}.bg-center{background-position:50%}.bg-no-repeat{background-repeat:no-repeat}.border-gray-300{--border-opacity:1;border-color:#ebebeb;border-color:rgba(235,235,235,var(--border-opacity))}.rounded{border-radius:.25rem}.border-solid{border-style:solid}.border-0{border-width:0}.border{border-width:1px}.border-t{border-top-width:1px}.cursor-pointer{cursor:pointer}.block{display:block}.inline-block{display:inline-block}.table{display:table}.hidden{display:none}.float-left{float:left}.clearfix:after{content:"";display:table;clear:both}.font-mono{font-family:monaco,courier,monospace}.font-light{font-weight:300}.font-normal{font-weight:400}.font-semibold{font-weight:600}.h-12{height:3rem}.h-20{height:5rem}.text-13{font-size:13px}.text-15{font-size:15px}.text-60{font-size:60px}.text-2xl{font-size:1.5rem}.text-3xl{font-size:1.875rem}.leading-tight{line-height:1.25}.leading-normal{line-height:1.5}.leading-relaxed{line-height:1.625}.leading-1\.3{line-height:1.3}.my-8{margin-top:2rem;margin-bottom:2rem}.mx-auto{margin-left:auto;margin-right:auto}.mr-2{margin-right:.5rem}.mb-2{margin-bottom:.5rem}.mt-3{margin-top:.75rem}.mb-4{margin-bottom:1rem}.ml-4{margin-left:1rem}.mt-6{margin-top:1.5rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mb-10{margin-bottom:2.5rem}.ml-10{margin-left:2.5rem}.mb-15{margin-bottom:3.75rem}.-ml-6{margin-left:-1.5rem}.overflow-hidden{overflow:hidden}.p-0{padding:0}.py-2{padding-top:.5rem;padding-bottom:.5rem}.px-4{padding-left:1rem;padding-right:1rem}.py-8{padding-top:2rem;padding-bottom:2rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-15{padding-top:3.75rem;padding-bottom:3.75rem}.pr-6{padding-right:1.5rem}.pt-10{padding-top:2.5rem}.absolute{position:absolute}.relative{position:relative}.left-1\/2{left:50%}.-bottom-4{bottom:-1rem}.resize{resize:both}.text-center{text-align:center}.text-black-dark{--text-opacity:1;color:#404040;color:rgba(64,64,64,var(--text-opacity))}.text-gray-600{--text-opacity:1;color:#999;color:rgba(153,153,153,var(--text-opacity))}.text-red-error{--text-opacity:1;color:#bd2426;color:rgba(189,36,38,var(--text-opacity))}.text-green-success{--text-opacity:1;color:#9bca3e;color:rgba(155,202,62,var(--text-opacity))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.w-12{width:3rem}.w-240{width:60rem}.w-1\/2{width:50%}.w-1\/3{width:33.333333%}.w-full{width:100%}.transition{-webkit-transition-property:background-color,border-color,color,fill,stroke,opacity,box-shadow,-webkit-transform;transition-property:background-color,border-color,color,fill,stroke,opacity,box-shadow,-webkit-transform;transition-property:background-color,border-color,color,fill,stroke,opacity,box-shadow,transform;transition-property:background-color,border-color,color,fill,stroke,opacity,box-shadow,transform,-webkit-transform}body,html{--text-opacity:1;color:#404040;color:rgba(64,64,64,var(--text-opacity));-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-size:16px}*,body,html{margin:0;padding:0}*{box-sizing:border-box}a{--text-opacity:1;color:#2f7bbf;color:rgba(47,123,191,var(--text-opacity));text-decoration:none;-webkit-transition-property:all;transition-property:all;-webkit-transition-duration:.15s;transition-duration:.15s;-webkit-transition-timing-function:cubic-bezier(0,0,.2,1);transition-timing-function:cubic-bezier(0,0,.2,1)}a:hover{--text-opacity:1;color:#f68b1f;color:rgba(246,139,31,var(--text-opacity))}img{display:block;width:100%;height:auto}#what-happened-section p{font-size:15px;line-height:1.5}strong{font-weight:600}.bg-gradient-gray{background-image:-webkit-linear-gradient(top,#dedede,#ebebeb 3%,#ebebeb 97%,#dedede)}.cf-error-source:after{position:absolute;--bg-opacity:1;background-color:#fff;background-color:rgba(255,255,255,var(--bg-opacity));width:2.5rem;height:2.5rem;--transform-translate-x:0;--transform-translate-y:0;--transform-rotate:0;--transform-skew-x:0;--transform-skew-y:0;--transform-scale-x:1;--transform-scale-y:1;-webkit-transform:translateX(var(--transform-translate-x)) translateY(var(--transform-translate-y)) rotate(var(--transform-rotate)) skewX(var(--transform-skew-x)) skewY(var(--transform-skew-y)) scaleX(var(--transform-scale-x)) scaleY(var(--transform-scale-y));-ms-transform:translateX(var(--transform-translate-x)) translateY(var(--transform-translate-y)) rotate(var(--transform-rotate)) skewX(var(--transform-skew-x)) skewY(var(--transform-skew-y)) scaleX(var(--transform-scale-x)) scaleY(var(--transform-scale-y));transform:translateX(var(--transform-translate-x)) translateY(var(--transform-translate-y)) rotate(var(--transform-rotate)) skewX(var(--transform-skew-x)) skewY(var(--transform-skew-y)) scaleX(var(--transform-scale-x)) scaleY(var(--transform-scale-y));--transform-rotate:45deg;content:"";bottom:-1.75rem;left:50%;margin-left:-1.25rem;box-shadow:0 0 4px 4px #dedede}@media screen and (max-width:720px){.cf-error-source:after{display:none}}.cf-icon-browser{background-image:url(data:image/svg+xml;utf8,%3Csvg%20id%3D%22a%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%2080.7362%22%3E%3Cpath%20d%3D%22M89.8358.1636H10.1642C4.6398.1636.1614%2C4.6421.1614%2C10.1664v60.4033c0%2C5.5244%2C4.4784%2C10.0028%2C10.0028%2C10.0028h79.6716c5.5244%2C0%2C10.0027-4.4784%2C10.0027-10.0028V10.1664c0-5.5244-4.4784-10.0028-10.0027-10.0028ZM22.8323%2C9.6103c1.9618%2C0%2C3.5522%2C1.5903%2C3.5522%2C3.5521s-1.5904%2C3.5522-3.5522%2C3.5522-3.5521-1.5904-3.5521-3.5522%2C1.5903-3.5521%2C3.5521-3.5521ZM12.8936%2C9.6103c1.9618%2C0%2C3.5522%2C1.5903%2C3.5522%2C3.5521s-1.5904%2C3.5522-3.5522%2C3.5522-3.5521-1.5904-3.5521-3.5522%2C1.5903-3.5521%2C3.5521-3.5521ZM89.8293%2C70.137H9.7312V24.1983h80.0981v45.9387ZM89.8293%2C16.1619H29.8524v-5.999h59.977v5.999Z%22%20style%3D%22fill%3A%20%23999%3B%22/%3E%3C/svg%3E)}.cf-icon-cloud{background-image:url(data:image/svg+xml;utf8,%3Csvg%20id%3D%22a%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20152%2078.9141%22%3E%3Cpath%20d%3D%22M132.2996%2C77.9927v-.0261c10.5477-.2357%2C19.0305-8.8754%2C19.0305-19.52%2C0-10.7928-8.7161-19.5422-19.4678-19.5422-2.9027%2C0-5.6471.6553-8.1216%2C1.7987C123.3261%2C18.6624%2C105.3419.9198%2C83.202.9198c-17.8255%2C0-32.9539%2C11.5047-38.3939%2C27.4899-3.0292-2.2755-6.7818-3.6403-10.8622-3.6403-10.0098%2C0-18.1243%2C8.1145-18.1243%2C18.1243%2C0%2C1.7331.258%2C3.4033.7122%2C4.9905-.2899-.0168-.5769-.0442-.871-.0442-8.2805%2C0-14.993%2C6.7503-14.993%2C15.0772%2C0%2C8.2795%2C6.6381%2C14.994%2C14.8536%2C15.0701v.0054h.1069c.0109%2C0%2C.0215.0016.0325.0016s.0215-.0016.0325-.0016%22%20style%3D%22fill%3A%20%23999%3B%22/%3E%3C/svg%3E)}.cf-icon-server{background-image:url(data:image/svg+xml;utf8,%3Csvg%20id%3D%22a%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2095%2075%22%3E%3Cpath%20d%3D%22M94.0103%2C45.0775l-12.9885-38.4986c-1.2828-3.8024-4.8488-6.3624-8.8618-6.3619l-49.91.0065c-3.9995.0005-7.556%2C2.5446-8.8483%2C6.3295L1.0128%2C42.8363c-.3315.971-.501%2C1.9899-.5016%2C3.0159l-.0121%2C19.5737c-.0032%2C5.1667%2C4.1844%2C9.3569%2C9.3513%2C9.3569h75.2994c5.1646%2C0%2C9.3512-4.1866%2C9.3512-9.3512v-17.3649c0-1.0165-.1657-2.0262-.4907-2.9893ZM86.7988%2C65.3097c0%2C1.2909-1.0465%2C2.3374-2.3374%2C2.3374H9.9767c-1.2909%2C0-2.3374-1.0465-2.3374-2.3374v-18.1288c0-1.2909%2C1.0465-2.3374%2C2.3374-2.3374h74.4847c1.2909%2C0%2C2.3374%2C1.0465%2C2.3374%2C2.3374v18.1288Z%22%20style%3D%22fill%3A%20%23999%3B%22/%3E%3Ccircle%20cx%3D%2274.6349%22%20cy%3D%2256.1889%22%20r%3D%224.7318%22%20style%3D%22fill%3A%20%23999%3B%22/%3E%3Ccircle%20cx%3D%2259.1472%22%20cy%3D%2256.1889%22%20r%3D%224.7318%22%20style%3D%22fill%3A%20%23999%3B%22/%3E%3C/svg%3E)}.cf-icon-ok{background-image:url(data:image/svg+xml;utf8,%3Csvg%20id%3D%22a%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Ccircle%20cx%3D%2224%22%20cy%3D%2224%22%20r%3D%2223.4815%22%20style%3D%22fill%3A%20%239bca3e%3B%22/%3E%3Cpolyline%20points%3D%2217.453%2024.9841%2021.7183%2030.4504%2030.2076%2016.8537%22%20style%3D%22fill%3A%20none%3B%20stroke%3A%20%23fff%3B%20stroke-linecap%3A%20round%3B%20stroke-linejoin%3A%20round%3B%20stroke-width%3A%204px%3B%22/%3E%3C/svg%3E)}.cf-icon-error{background-image:url(data:image/svg+xml;utf8,%3Csvg%20id%3D%22a%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2047.9145%2047.9641%22%3E%3Ccircle%20cx%3D%2223.9572%22%20cy%3D%2223.982%22%20r%3D%2223.4815%22%20style%3D%22fill%3A%20%23bd2426%3B%22/%3E%3Cline%20x1%3D%2219.0487%22%20y1%3D%2219.0768%22%20x2%3D%2227.8154%22%20y2%3D%2228.8853%22%20style%3D%22fill%3A%20none%3B%20stroke%3A%20%23fff%3B%20stroke-linecap%3A%20round%3B%20stroke-linejoin%3A%20round%3B%20stroke-width%3A%203px%3B%22/%3E%3Cline%20x1%3D%2227.8154%22%20y1%3D%2219.0768%22%20x2%3D%2219.0487%22%20y2%3D%2228.8853%22%20style%3D%22fill%3A%20none%3B%20stroke%3A%20%23fff%3B%20stroke-linecap%3A%20round%3B%20stroke-linejoin%3A%20round%3B%20stroke-width%3A%203px%3B%22/%3E%3C/svg%3E)}#cf-wrapper .feedback-hidden{display:none}#cf-wrapper .feedback-success{min-height:33px;line-height:33px}#cf-wrapper .cf-button{color:#0051c3;font-size:13px;border-color:#0045a6;-webkit-transition-timing-function:ease;transition-timing-function:ease;-webkit-transition-duration:.2s;transition-duration:.2s;-webkit-transition-property:background-color,border-color,color;transition-property:background-color,border-color,color}#cf-wrapper .cf-button:hover{color:#fff;background-color:#003681}.cf-error-footer .hidden{display:none}.cf-error-footer .cf-footer-ip-reveal-btn{-webkit-appearance:button;-moz-appearance:button;appearance:button;text-decoration:none;background:none;color:inherit;border:none;padding:0;font:inherit;cursor:pointer;color:#0051c3;-webkit-transition:color .15s ease;transition:color .15s ease}.cf-error-footer .cf-footer-ip-reveal-btn:hover{color:#ee730a}.code-label{background-color:#d9d9d9;color:#313131;font-weight:500;border-radius:1.25rem;font-size:.75rem;line-height:4.5rem;padding:.25rem .5rem;height:4.5rem;white-space:nowrap;vertical-align:middle}@media (max-width:639px){.sm\:block{display:block}.sm\:hidden{display:none}.sm\:mb-1{margin-bottom:.25rem}.sm\:mb-2{margin-bottom:.5rem}.sm\:py-4{padding-top:1rem;padding-bottom:1rem}.sm\:px-8{padding-left:2rem;padding-right:2rem}.sm\:text-left{text-align:left}}@media (max-width:720px){.md\:border-gray-400{--border-opacity:1;border-color:#dedede;border-color:rgba(222,222,222,var(--border-opacity))}.md\:border-solid{border-style:solid}.md\:border-0{border-width:0}.md\:border-b{border-bottom-width:1px}.md\:block{display:block}.md\:inline-block{display:inline-block}.md\:hidden{display:none}.md\:float-none{float:none}.md\:text-3xl{font-size:1.875rem}.md\:m-0{margin:0}.md\:mt-0{margin-top:0}.md\:mb-2{margin-bottom:.5rem}.md\:p-0{padding:0}.md\:py-8{padding-top:2rem;padding-bottom:2rem}.md\:px-8{padding-left:2rem;padding-right:2rem}.md\:pr-0{padding-right:0}.md\:pb-10{padding-bottom:2.5rem}.md\:top-0{top:0}.md\:right-0{right:0}.md\:left-auto{left:auto}.md\:text-left{text-align:left}.md\:w-full{width:100%}}@media (max-width:1023px){.lg\:text-sm{font-size:.875rem}.lg\:text-2xl{font-size:1.5rem}.lg\:text-4xl{font-size:2.25rem}.lg\:leading-relaxed{line-height:1.625}.lg\:px-8{padding-left:2rem;padding-right:2rem}.lg\:pt-6{padding-top:1.5rem}.lg\:w-full{width:100%}}
 </style>
 </head>
-
 <body>
+<div id="cf-wrapper">
+    <div id="cf-error-details" class="p-0">
+        <header class="mx-auto pt-10 lg:pt-6 lg:px-8 w-240 lg:w-full mb-8">
+            <h1 class="inline-block sm:block sm:mb-2 font-light text-60 lg:text-4xl text-black-dark leading-tight mr-2">
+                <span class="inline-block">The Myth Of &#34;Consensual&#34; Internet</span>
+                <span class="code-label">Error code lmao</span>
+            </h1>
+            <div>
+                Visit <a href="https://github.com/Guru322" target="_blank" rel="noopener noreferrer">Here</a> for To Follow Me On Github.
+            </div>
+            <div class="mt-3">2026-03-02 11:50:01 UTC</div>
+        </header>
+        <div class="my-8 bg-gradient-gray">
+            <div class="w-240 lg:w-full mx-auto">
+                <div class="clearfix md:px-8">
+                    <div id="cf-browser-status" class=" relative w-1/3 md:w-full py-15 md:p-0 md:py-8 md:text-left md:border-solid md:border-0 md:border-b md:border-gray-400 overflow-hidden float-left md:float-none text-center">
+                        <div class="relative mb-10 md:m-0">
+                            <span class="cf-icon-browser block md:hidden h-20 bg-center bg-no-repeat"></span>
+                            <span class="cf-icon-ok w-12 h-12 absolute left-1/2 md:left-auto md:right-0 md:top-0 -ml-6 -bottom-4"></span>
+                        </div>
+                        <span class="md:block w-full truncate">You</span>
+                        <h3 class="md:inline-block mt-3 md:mt-0 text-2xl text-gray-600 font-light leading-1.3" >Browser</h3>
+                        <span class="leading-1.3 text-2xl" style="color: #9bca3e">I Consent</span>
+                    </div>
+                    <div id="cf-cloudflare-status" class="cf-error-source relative w-1/3 md:w-full py-15 md:p-0 md:py-8 md:text-left md:border-solid md:border-0 md:border-b md:border-gray-400 overflow-hidden float-left md:float-none text-center">
+                        <div class="relative mb-10 md:m-0">
+                            <span class="cf-icon-cloud block md:hidden h-20 bg-center bg-no-repeat"></span>
+                            <span class="cf-icon-error w-12 h-12 absolute left-1/2 md:left-auto md:right-0 md:top-0 -ml-6 -bottom-4"></span>
+                        </div>
+                        <span class="md:block w-full truncate">F***ing Everywhere</span>
+                        <h3 class="md:inline-block mt-3 md:mt-0 text-2xl text-gray-600 font-light leading-1.3" >Guru</h3>
+                        <span class="leading-1.3 text-2xl" style="color: #bd2426">I Don&#39;t!</span>
+                    </div>
+                    <div id="cf-host-status" class=" relative w-1/3 md:w-full py-15 md:p-0 md:py-8 md:text-left md:border-solid md:border-0 md:border-b md:border-gray-400 overflow-hidden float-left md:float-none text-center">
+                        <div class="relative mb-10 md:m-0">
+                            <span class="cf-icon-server block md:hidden h-20 bg-center bg-no-repeat"></span>
+                            <span class="cf-icon-ok w-12 h-12 absolute left-1/2 md:left-auto md:right-0 md:top-0 -ml-6 -bottom-4"></span>
+                        </div>
+                        <span class="md:block w-full truncate">Remote</span>
+                        <h3 class="md:inline-block mt-3 md:mt-0 text-2xl text-gray-600 font-light leading-1.3" >Host</h3>
+                        <span class="leading-1.3 text-2xl" style="color: #9bca3e">I Consent</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div id="bg" style="
-position:fixed;
-inset:0;
-background:url('https://picsum.photos/1920/1080?blur=2') center/cover no-repeat;
-transform:scale(1.1);
-transition:transform 0.2s;
-"></div>
+        <div class="w-240 lg:w-full mx-auto mb-8 lg:px-8">
+            <div class="clearfix">
+                <div class="w-1/2 md:w-full float-left pr-6 md:pb-10 md:pr-0 leading-relaxed">
+                    <h2 class="text-3xl font-normal leading-1.3 mb-4">What happened?</h2>
+                    Isn&#39;t There Someone You Forgot To Ask?
+                </div>
+                <div class="w-1/2 md:w-full float-left leading-relaxed">
+                    <h2 class="text-3xl font-normal leading-1.3 mb-4">What can I do?</h2>
+                    Do not try
+                </div>
+            </div>
+        </div>
 
-
-<div id="wrapper">
-    <div id="shine" style="
-    position:absolute;
-    inset:0;
-    border-radius:25px;
-    background:radial-gradient(circle at center, rgba(255,255,255,0.6), transparent 60%);
-    opacity:0.3;
-    pointer-events:none;
-    z-index: 10;
-    "></div>
-
-    <div class="glass-card">
-        <h1 style="margin-top:0;">Bulk Domain Lookup</h1>
-        <textarea id="domainInput"
-        style="
-        width:100%;
-        height:150px;
-        margin-bottom:15px;
-        background:rgba(255,255,255,0.1);
-        border:none;
-        border-radius:15px;
-        padding:10px;
-        color:white;
-        outline:none;
-        resize:vertical;
-        box-sizing: border-box;
-        "></textarea>
-
-        <button id="submitBtn"
-        onclick="processDomains()"
-        style="
-        padding:12px 25px;
-        border:none;
-        border-radius:15px;
-        background:rgba(255,255,255,0.2);
-        color:white;
-        cursor:pointer;
-        transition:0.2s;
-        "
-        onmouseover="this.style.transform='scale(1.05)'"
-        onmouseout="this.style.transform='scale(1)'"
-        >
-        Get Countries
-        </button>
-
-        <div id="status" style="margin-top:10px;"></div>
-    </div>
-
-    <div class="glass-card" style="max-height: 40vh; overflow-y: auto; padding-top: 15px; overflow-x: hidden;">
-        <table id="resultTable"
-        style="
-        width:100%;
-        border-collapse:collapse;
-        background:rgba(255,255,255,0.05);
-        border-radius:15px;
-        overflow:hidden;
-        ">
-        <thead>
-        <tr>
-        <th onclick="copyColumn(0)" title="Click to copy all Inputs" style="width: 70%; text-align: left;">Input 📋</th>
-        <th onclick="copyColumn(1)" title="Click to copy all Countries" style="width: 30%; text-align: left;">Country 📋</th>
-        </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+        <div class="cf-error-footer cf-wrapper w-240 lg:w-full py-10 sm:py-4 sm:px-8 mx-auto text-center sm:text-left border-solid border-0 border-t border-gray-300">
+            <p class="text-13">
+                <span class="cf-footer-item sm:block sm:mb-1">Ray ID: <strong class="font-semibold">0123456789abcdef</strong></span>
+                <span class="cf-footer-separator sm:hidden">&bull;</span>
+                <span id="cf-footer-item-ip" class="cf-footer-item hidden sm:block sm:mb-1">
+                    Your IP:
+                    <button type="button" id="cf-footer-ip-reveal" class="cf-footer-ip-reveal-btn">Click to reveal</button>
+                    <span class="hidden" id="cf-footer-ip">1.1.1.1</span>
+                    <span class="cf-footer-separator sm:hidden">&bull;</span>
+                </span>
+                
+                <span class="cf-footer-item sm:block sm:mb-1"><span>Performance &amp; security by</span> <a rel="noopener noreferrer" href="https://www.cloudflare.com/" id="brand_link" target="_blank">Cloudflare</a></span>
+            </p>
+        </div></div>
 </div>
-
-
-<script>
-const wrapper = document.getElementById("wrapper")
-const shine = document.getElementById("shine")
-const bg = document.getElementById("bg")
-
-// 3D Tilt Effect on the whole wrapper
-document.addEventListener("mousemove", e => {
-    let x = e.clientX / window.innerWidth
-    let y = e.clientY / window.innerHeight
-    let rotateX = (y - 0.5) * 15
-    let rotateY = (x - 0.5) * -15
-
-    wrapper.style.transform =
-    \`translate(-50%,-50%)
-    rotateX(\${rotateX}deg)
-    rotateY(\${rotateY}deg)
-    scale(1.03)\`
-
-    shine.style.background =
-    \`radial-gradient(
-    circle at \${x*100}% \${y*100}%,
-    rgba(255,255,255,0.7),
-    transparent 60%)\`
-
-    bg.style.transform =
-    \`scale(1.1)
-    translate(\${x*-40}px,\${y*-40}px)\`
-})
-
-document.addEventListener("mouseleave", () => {
-    wrapper.style.transform = "translate(-50%,-50%)"
-})
-
-// Logic to process domains
-async function processDomains() {
-    const input = document.getElementById('domainInput').value;
-    const statusDiv = document.getElementById('status');
-    const tableBody = document.getElementById('tableBody');
-    const btn = document.getElementById('submitBtn');
-
-    const domains = input.split('\\n').map(d => d.trim()).filter(d => d);
-
-    if (domains.length === 0) return alert("enter domains");
-
-    btn.disabled = true;
-    tableBody.innerHTML = '';
-
-    for (let i = 0; i < domains.length; i++) {
-        const domain = domains[i];
-        statusDiv.innerText = \`Processing \${i+1} / \${domains.length}\`
-
-        try{
-            const response = await fetch('/api/lookup',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({domain})
-            })
-
-            const data = await response.json()
-
-            tableBody.innerHTML +=
-            \`<tr>
-            <td>\${data.original}</td>
-            <td>\${data.country}</td>
-            </tr>\`
-        } catch {
-            tableBody.innerHTML +=
-            \`<tr>
-            <td>\${domain}</td>
-            <td>Error</td>
-            </tr>\`
-        }
-    }
-
-    statusDiv.innerText="Done"
-    btn.disabled=false
-}
-
-// Logic to copy entire column
-function copyColumn(colIndex) {
-    const rows = document.querySelectorAll('#tableBody tr');
-    if (rows.length === 0) return; // Nothing to copy
-
-    let dataToCopy = [];
-    rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        if (cells[colIndex]) {
-            dataToCopy.push(cells[colIndex].innerText);
-        }
-    });
-
-    const textToCopy = dataToCopy.join('\\n');
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        const colName = colIndex === 0 ? 'Inputs' : 'Countries';
-        alert(colName + ' copied to clipboard!');
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        alert('Failed to copy to clipboard.');
-    });
-}
-</script>
-
+<script>(function(){function d(){var b=a.getElementById("cf-footer-item-ip"),c=a.getElementById("cf-footer-ip-reveal");b&&"classList"in b&&(b.classList.remove("hidden"),c.addEventListener("click",function(){c.classList.add("hidden");a.getElementById("cf-footer-ip").classList.remove("hidden")}))}var a=document;document.addEventListener&&a.addEventListener("DOMContentLoaded",d)})();</script>
 </body>
 </html>
 `);
 });
 
-app.post('/api/lookup', async (req, res) => {
-    const rawInput = req.body.domain || "";
-    
-    if (!rawInput) {
-        return res.json({ original: "N/A", country: "Invalid Input" });
-    }
-
-    let lookupDomain = rawInput;
-
-    try {
-        let tempUrl = rawInput.startsWith('http')
-            ? rawInput
-            : 'http://' + rawInput;
-        lookupDomain = new URL(tempUrl).hostname;
-    } catch (error) {}
-
-    await new Promise(r => setTimeout(r, 500));
-
-    try {
-        const response = await axios.get(
-            `http://ip-api.com/json/${lookupDomain}?fields=country`
-        );
-
-        let resultCountry = response.data.country || "Unknown";
-        
-        if (resultCountry === "Canada") {
-            resultCountry = "United States";
-        }
-
-        res.json({
-            original: rawInput,
-            country: resultCountry
-        });
-
-    } catch (error) {
-        res.json({
-            original: rawInput,
-            country: "Error"
-        });
-    }
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Running on http://0.0.0.0:${port}`);
 });
-
-app.listen(port, '0.0.0.0', () => {  
-    console.log(`Running on http://0.0.0.0:${port}`);  
-});  
